@@ -1,28 +1,51 @@
-import { useState } from 'react'
+import { useState, useEffect } from "react";
+import Header from "./components/Header";
+import Hero from "./components/Hero";
+import AuthCard from "./components/AuthCard";
+import FloatingDecor from "./components/FloatingDecor";
 
-function App() {
-  const [count, setCount] = useState(0)
+export default function App() {
+  const [tab, setTab] = useState("login");
+
+  useEffect(() => {
+    // Inject keyframes for floating animations
+    const style = document.createElement("style");
+    style.innerHTML = `
+      @keyframes float {
+        0% { transform: translateY(0px); }
+        50% { transform: translateY(-12px); }
+        100% { transform: translateY(0px); }
+      }
+      @keyframes float-slow {
+        0% { transform: translateY(0px); }
+        50% { transform: translateY(-8px); }
+        100% { transform: translateY(0px); }
+      }
+      .animate-float { animation: float 6s ease-in-out infinite; }
+      .animate-float-delay { animation: float 7.5s ease-in-out 0.6s infinite; }
+      .animate-float-slow { animation: float-slow 8s ease-in-out infinite; }
+    `;
+    document.head.appendChild(style);
+    return () => { document.head.removeChild(style); };
+  }, []);
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-purple-50 to-blue-50 flex items-center justify-center">
-      <div className="bg-white p-8 rounded-lg shadow-lg">
-        <h1 className="text-3xl font-bold text-gray-800 mb-4">
-          Vibe Coding Platform
-        </h1>
-        <p className="text-gray-600 mb-6">
-          Your AI-powered development environment
-        </p>
-        <div className="text-center">
-          <button
-            onClick={() => setCount(count + 1)}
-            className="bg-blue-500 hover:bg-blue-600 text-white font-semibold py-2 px-4 rounded"
-          >
-            Count is {count}
-          </button>
-        </div>
-      </div>
-    </div>
-  )
-}
+    <div className="min-h-screen bg-black text-white relative overflow-hidden">
+      <Header activeTab={tab} onTabChange={setTab} />
+      <Hero />
 
-export default App
+      <main className="relative">
+        <FloatingDecor />
+        <div className="mx-auto max-w-6xl px-4 -mt-24 pb-20">
+          <AuthCard mode={tab} onSwitch={setTab} />
+        </div>
+      </main>
+
+      <footer className="relative border-t border-white/10 bg-black/60">
+        <div className="mx-auto max-w-6xl px-4 py-6 text-center text-white/50 text-sm">
+          © {new Date().getFullYear()} Nebula Access. All rights reserved.
+        </div>
+      </footer>
+    </div>
+  );
+}
